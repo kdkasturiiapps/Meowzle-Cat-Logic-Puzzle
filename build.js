@@ -11,6 +11,7 @@ let html = fs.readFileSync(path.join(__dirname, 'src', 'game.html'), 'utf8');
 html = html
   .replace('/*ENGINE*/', () => strip('engine.js'))
   .replace('/*REMINDERS*/', () => strip('reminders.js'))
+  .replace("'__ADS_MODE__'", JSON.stringify(process.env.ADS_MODE === 'live' ? 'live' : 'test'))
   .replace('/*CLOUD*/', () => cloud.replace(/<\/script/gi, '<\\/script'))
   .replace(/<link rel="preconnect"[^\n]*\n/, '')
   .replace(/<link href="https:\/\/fonts\.googleapis\.com[^>]*>/, '<link href="fonts/nunito.css" rel="stylesheet">');
@@ -25,4 +26,4 @@ for (const w of [600, 700, 800]) {
 }
 fs.writeFileSync(path.join(out, 'fonts', 'nunito.css'), css);
 fs.writeFileSync(path.join(out, 'index.html'), html);
-console.log('www/index.html built:', Math.round(html.length / 1024), 'KB');
+console.log('www/index.html built:', Math.round(html.length / 1024), 'KB', '· ads:', process.env.ADS_MODE === 'live' ? 'LIVE' : 'test');

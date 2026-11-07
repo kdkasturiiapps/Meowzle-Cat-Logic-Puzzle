@@ -183,7 +183,7 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
     <button class="big plain" id="btnBoard">🏆 Leaderboard <small id="boardInfo">See where you stand worldwide</small></button>
     <button class="big plain" id="btnAlbum">🐾 My Cats <small id="albumInfo"></small></button>
     <button class="big plain" id="btnHow">How to play</button>
-    <div class="note">Prototype · test ads</div>
+    <div class="note" id="footNote"></div>
   </section>
   <section id="game" class="screen">
     <div class="gtop">
@@ -349,6 +349,67 @@ function fakeAd(title, cb) {
   paused = true; $('adTitle').textContent = title; $('admodal').classList.add('on');
   let n = 3; $('adCount').textContent = n;
   const iv = setInterval(() => { n--; $('adCount').textContent = n; if (n <= 0) { clearInterval(iv); $('admodal').classList.remove('on'); paused = $('modal').classList.contains('on'); cb && cb(); } }, 700);
+}
+// ---------- real ads (AdMob, Android app only; web preview keeps the fake ad screen) ----------
+const AD_MODE = '__ADS_MODE__'; // 'test' for phone test builds, 'live' for Play Store builds (set by build.js)
+const AD_IDS = {
+  live: { inter: '', hint: 'ca-app-pub-5900359068761431/7429230509', heart: 'ca-app-pub-5900359068761431/4803067169' },
+  // Google's official sample ad units: safe to tap while testing
+  test: { inter: 'ca-app-pub-3940256099942544/1033173712', hint: 'ca-app-pub-3940256099942544/5224354917', heart: 'ca-app-pub-3940256099942544/5224354917' }
+};
+const AM = () => { const C = window.Capacitor; return C && C.isNativePlatform && C.isNativePlatform() && C.Plugins && C.Plugins.AdMob; };
+const ads = {
+  ready: false, state: {}, cb: {}, rewarded: false,
+  testing: AD_MODE !== 'live',
+  id(k) { return AD_IDS[this.testing ? 'test' : 'live'][k]; },
+  async init() {
+    const a = AM(); if (!a) return;
+    try {
+      const on = (ev, f) => a.addListener(ev, f);
+      on('interstitialAdDismissed', () => this.fire('inter'));
+      on('interstitialAdFailedToShow', () => this.fire('inter'));
+      on('onRewardedVideoAdReward', () => { this.rewarded = true; });
+      on('onRewardedVideoAdDismissed', () => this.fire('reward'));
+      on('onRewardedVideoAdFailedToShow', () => this.fire('reward'));
+      await a.initialize({ initializeForTesting: this.testing });
+      let ci = await a.requestConsentInfo(); // Europe/UK consent popup (set up in AdMob → Privacy & messaging)
+      if (!ci.canRequestAds && ci.isConsentFormAvailable && ci.status === 'REQUIRED') ci = await a.showConsentForm();
+      this.ready = ci.canRequestAds !== false;
+      this.preload();
+    } catch (e) { this.ready = false; }
+  },
+  fire(k) { const f = this.cb[k]; this.cb[k] = null; f && f(); },
+  async load(k) {
+    const a = AM(); if (!a || !this.ready || !this.id(k) || this.state[k] === 'loading' || this.state[k] === 'ok') return;
+    this.state[k] = 'loading';
+    try {
+      const opt = { adId: this.id(k), isTesting: this.testing };
+      if (k === 'inter') await a.prepareInterstitial(opt); else await a.prepareRewardVideoAd(opt);
+      this.state[k] = 'ok';
+    } catch (e) { this.state[k] = 'fail'; setTimeout(() => { if (this.state[k] === 'fail') this.state[k] = null; }, 30000); }
+  },
+  preload() { ['inter', 'hint', 'heart'].forEach(k => this.load(k)); }
+};
+function withAdPause(run, after) { // stop music + timer while a full-screen ad is up
+  const wasOn = music.on; music.stop(); paused = true;
+  run(() => { paused = $('modal').classList.contains('on'); if (wasOn) music.start(); after && after(); });
+}
+// Interstitial between levels: never blocks the game if no ad is ready
+function adInter(next) {
+  const a = AM();
+  if (!a) return fakeAd('Interstitial ad', next);
+  if (ads.state.inter !== 'ok') { ads.load('inter'); return next(); }
+  ads.state.inter = null;
+  withAdPause(done => { ads.cb.inter = done; a.showInterstitial().catch(() => ads.fire('inter')); }, () => { ads.load('inter'); next(); });
+}
+// Rewarded: reward only if the video was watched
+function adReward(kind, onReward, title) {
+  const a = AM();
+  if (!a) return fakeAd(title, onReward);
+  if (ads.state[kind] !== 'ok') { ads.load(kind); toast('No video ready yet. Try again in a moment 🐾'); return; }
+  ads.state[kind] = null; ads.rewarded = false;
+  withAdPause(done => { ads.cb.reward = done; a.showRewardVideoAd().catch(() => ads.fire('reward')); },
+    () => { ads.load(kind); if (ads.rewarded) onReward(); else toast('Watch the whole video to get the reward'); });
 }
 const fmt = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 const dayNum = () => Reminders.dayOf(Date.now());
@@ -676,7 +737,7 @@ function placeCat(i) {
 function outOfLives() {
   modal(`<div style="width:70px;height:70px">${HEART}</div><h2>Out of hearts!</h2><p>The cats are still waiting for their spots.</p>
   <button class="big" id="mRevive">▶ Watch ad · +1 heart</button><button class="big plain" id="mRestart">Start again</button>`);
-  $('mRevive').onclick = () => { closeModal(); fakeAd('Rewarded ad', () => { G.lives = 1; renderHud(); toast('+1 heart'); }); };
+  $('mRevive').onclick = () => { closeModal(); adReward('heart', () => { G.lives = 1; renderHud(); toast('+1 heart'); }, 'Rewarded ad'); };
   $('mRestart').onclick = () => { closeModal(); startGame(G.mode, true); };
 }
 function useHint() {
@@ -690,7 +751,7 @@ function useHint() {
     const el = $('c' + i); el.classList.add('glow');
     setTimeout(() => { el.classList.remove('glow'); G.state[i] = ''; placeCat(i); }, 650);
   };
-  if (h > 0) { store.set('hints', h - 1); renderHud(); go(); } else fakeAd('Rewarded ad · free hint', go);
+  if (h > 0) { store.set('hints', h - 1); renderHud(); go(); } else adReward('hint', go, 'Rewarded ad · free hint');
 }
 // input
 let ptr = null, lastTap = { i: -1, t: 0 };
@@ -771,7 +832,7 @@ function afterLevel(L, newCat, then) {
       sfx.meow(); $('mOk').onclick = () => { closeModal(); then(); };
     } else then();
   };
-  if (L >= 4 && L % 3 === 0) fakeAd('Interstitial ad', next); else next();
+  if (L >= 4 && L % 3 === 0) adInter(next); else next();
 }
 function dailyResult() {
   const d = dayNum(), t = store.get('dailyTime', 0), st = store.get('dailyStars', 3), streak = store.get('streak', 0);
@@ -865,6 +926,8 @@ $('btnAlbum').onclick = () => {
 window.addEventListener('resize', () => { if (G && $('game').classList.contains('on')) { buildBoard(); renderAll(); } });
 if (!store.get('lastPlay', 0)) store.set('lastPlay', Date.now());
 syncReminders();
+ads.init();
+$('footNote').textContent = AM() ? (ads.testing ? 'Test build · sample ads' : '') : 'Preview · ads shown as placeholders';
 goHome();
 setTimeout(() => { syncScore().then(r => r && MeowCloud.myStanding(store.get('score', 0)).then(s => { store.set('lastRank', s.rank); updateHome(); })).catch(() => {}); syncDaily(dayNum()); }, 1500);
 window.addEventListener('online', () => { syncScore(); syncDaily(dayNum()); });
