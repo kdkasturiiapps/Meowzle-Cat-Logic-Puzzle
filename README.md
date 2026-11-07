@@ -4,6 +4,7 @@ A cozy cat logic puzzle for Android. Put one cat in every colour block, one per 
 
 ## How it's built
 - `src/game.html` — the whole game (HTML/CSS/JS); `src/engine.js` makes the puzzles (each has exactly one solution); `src/reminders.js` plans play reminders (every 3 h after last play, never 9 PM–7 AM, streak warnings at 4 PM and 6 PM local time).
+- `src/cloud.js` + `src/firebase-config.js` — online scores and leaderboard (Firebase anonymous sign-in + Firestore). Security rules: `firestore.rules` (paste into Firebase console → Firestore → Rules).
 - `build.js` puts it together into `www/` (fonts bundled so it works offline).
 - Android app via [Capacitor](https://capacitorjs.com) (`android/`), with Local Notifications. Reminder sound: `android/app/src/main/res/raw/meow.wav`.
 

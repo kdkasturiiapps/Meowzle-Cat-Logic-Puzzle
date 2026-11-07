@@ -102,6 +102,24 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
 .toast.on{transform:translate(-50%,0)}
 .rules{text-align:left;color:var(--ink);font-size:15px;line-height:1.45;margin:0;padding-left:20px;font-weight:600}
 .rules li{margin-bottom:6px}
+.tabs{display:flex;background:#ece8e3;border-radius:14px;padding:4px;width:100%;margin-top:18px}
+.tabs button{flex:1;padding:9px 4px;border-radius:11px;font-weight:800;font-size:15px;color:var(--soft)}
+.tabs button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+.lb{width:100%;margin-top:12px;background:#fff;border-radius:18px;box-shadow:var(--shadow);overflow:auto;flex:1;min-height:0}
+.lbrow{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line);font-weight:700;font-size:15px}
+.lbrow:last-child{border-bottom:0}
+.lbrow .rk{width:34px;text-align:center;color:var(--soft);font-weight:800}
+.lbrow .rk.m{font-size:20px}
+.lbrow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbrow .sc{font-weight:800}
+.lbrow.me{background:#fff0f4}
+.lbmsg{padding:30px 16px;text-align:center;color:var(--soft);font-weight:600;line-height:1.5}
+.mine{width:100%;margin-top:12px;background:var(--ink);color:#fff;border-radius:16px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.mine b{font-size:20px}
+.mine small{display:block;opacity:.7;font-weight:600;font-size:12px}
+.nameinput{width:100%;font:inherit;font-size:17px;font-weight:700;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--ink);text-align:center;outline:none}
+.nameinput:focus{border-color:var(--accent)}
+.rankline{font-weight:700;color:var(--ink);font-size:15px}
 .boardWrap.sh{box-shadow:0 0 0 3px #8b5cf6,0 6px 26px rgba(139,92,246,.35)}
 .shbadge{display:none;margin:-4px 0 10px;background:linear-gradient(90deg,#8b5cf6,#d946ef);color:#fff;font-weight:800;font-size:13px;letter-spacing:.8px;padding:4px 12px;border-radius:999px}
 .shbadge.on{display:inline-block}
@@ -162,6 +180,7 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
     <div class="tag">Cat Logic Puzzle · one cat in every colour, row &amp; column</div>
     <button class="big pinkb" id="btnPlay">Play <small id="playInfo">Level 1</small></button>
     <button class="big blue" id="btnDaily">Daily Puzzle <small id="dailyInfo"></small></button>
+    <button class="big plain" id="btnBoard">🏆 Leaderboard <small id="boardInfo">See where you stand worldwide</small></button>
     <button class="big plain" id="btnAlbum">🐾 My Cats <small id="albumInfo"></small></button>
     <button class="big plain" id="btnHow">How to play</button>
     <div class="note">Prototype · test ads</div>
@@ -184,6 +203,12 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
     <div class="tip" id="tip"></div>
     <div class="help" id="help">Tap = ✕ &nbsp;·&nbsp; Double-tap = 🐱<br>Tap a ✕ again to clear it &nbsp;·&nbsp; Drag = ✕ many</div>
   </section>
+  <section id="boardS" class="screen">
+    <div class="top"><button class="iconbtn" id="btnBack3">←</button><div class="ttl">Leaderboard</div><button class="iconbtn" id="btnRename" aria-label="Change name">✏️</button></div>
+    <div class="tabs"><button class="on" data-t="all">🌍 All-time</button><button data-t="daily">📅 Today's Daily</button></div>
+    <div class="lb" id="lb"></div>
+    <div class="mine" id="mine"></div>
+  </section>
   <section id="albumS" class="screen">
     <div class="top"><button class="iconbtn" id="btnBack2">←</button><div class="ttl">My Cats</div><div style="width:44px"></div></div>
     <div class="album" id="album"></div>
@@ -195,6 +220,9 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
 <canvas class="confetti" id="confetti"></canvas>
 <div class="toast" id="toast"></div>
 <div class="notif" id="notif"><div class="nicon">🐱</div><div><div class="napp">Meowzle · now</div><b id="nTitle"></b><p id="nBody"></p></div></div>
+<script>
+/*CLOUD*/
+</script>
 <script>
 /*ENGINE*/
 /*REMINDERS*/
@@ -356,6 +384,88 @@ function previewReminder(p) {
   buzz([60, 40, 60]);
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden) { music.stop(); store.set('lastPlay', Date.now()); syncReminders(); } else { if (ac) music.start(); syncReminders(); } });
+// ---------- online scores & global standing (Firebase; only works with internet) ----------
+const ADJ = ['Fluffy', 'Sleepy', 'Sassy', 'Tiny', 'Brave', 'Lucky', 'Fuzzy', 'Sunny', 'Misty', 'Happy', 'Cozy', 'Zippy'];
+const NOUN = ['Whiskers', 'Paws', 'Mittens', 'Tabby', 'Kitten', 'Purr', 'Biscuit', 'Mochi', 'Tiger', 'Pebble', 'Noodle', 'Muffin'];
+function playerName() {
+  let n = store.get('pname', '');
+  if (!n) { n = ADJ[(Math.random() * ADJ.length) | 0] + NOUN[(Math.random() * NOUN.length) | 0] + Math.floor(100 + Math.random() * 900); store.set('pname', n); }
+  return n;
+}
+function country() {
+  try { const loc = new Intl.Locale(navigator.language); const r = (loc.maximize().region || '').toUpperCase(); if (/^[A-Z]{2}$/.test(r)) return r; } catch (e) {}
+  return '';
+}
+const flag = cc => cc && /^[A-Z]{2}$/.test(cc) ? String.fromCodePoint(...[...cc].map(c => 127397 + c.charCodeAt(0))) : '🐾';
+const cloudOK = () => !!window.MeowCloud && navigator.onLine !== false;
+let syncing = null;
+function syncScore() { // safe to call often; uploads level/score when there is something new
+  if (!cloudOK()) return Promise.resolve(null);
+  if (syncing) return syncing;
+  const data = { name: playerName(), score: store.get('score', 0), level: store.get('level', 1), country: country() };
+  syncing = MeowCloud.pushPlayer(data).then(r => {
+    store.set('syncedScore', r.score); store.set('uid', r.uid);
+    if (r.score > store.get('score', 0) && !store.get('noRestore', false)) store.set('score', r.score); // restore after a reinstall
+    return r;
+  }).catch(() => null).finally(() => { syncing = null; });
+  return syncing;
+}
+function syncDaily(day) {
+  if (!cloudOK() || store.get('dailySynced', 0) === day || store.get('dailyDone', 0) !== day) return Promise.resolve(null);
+  return MeowCloud.pushDaily(day, { name: playerName(), time: store.get('dailyTime', 0), stars: store.get('dailyStars', 3), country: country() })
+    .then(r => { store.set('dailySynced', day); return r; }).catch(() => null);
+}
+let boardTab = 'all';
+function lbRow(i, p, value, me) {
+  const medal = ['🥇', '🥈', '🥉'][i];
+  return `<div class="lbrow${me ? ' me' : ''}"><span class="rk${medal ? ' m' : ''}">${medal || i + 1}</span><span>${flag(p.country)}</span><span class="nm">${esc(p.name || 'Cat')}${me ? ' (you)' : ''}</span><span class="sc">${value}</span></div>`;
+}
+const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+async function renderBoard() {
+  const lb = $('lb'), mine = $('mine'), tab = boardTab;
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
+  lb.innerHTML = '<div class="lbmsg">Loading… 🐾</div>'; mine.innerHTML = '';
+  if (!cloudOK()) { lb.innerHTML = '<div class="lbmsg">📶 Connect to the internet to see the world leaderboard.</div>'; return; }
+  try {
+    if (tab === 'all') {
+      await syncScore();
+      const [top, me] = await Promise.all([MeowCloud.topPlayers(50), MeowCloud.myStanding(store.get('score', 0))]);
+      if (boardTab !== tab) return;
+      lb.innerHTML = top.length ? top.map((p, i) => lbRow(i, p, p.score.toLocaleString(), p.id === me.uid)).join('') : '<div class="lbmsg">No scores yet. Be the first! 🏆</div>';
+      store.set('lastRank', me.rank);
+      mine.innerHTML = `<div>${esc(playerName())}<small>Level ${store.get('level', 1)} · ${store.get('score', 0).toLocaleString()} pts</small></div><div style="text-align:right"><b>#${me.rank.toLocaleString()}</b><small>of ${me.total.toLocaleString()} players</small></div>`;
+    } else {
+      const d = dayNum();
+      await syncDaily(d);
+      const top = await MeowCloud.dailyTop(d, 50);
+      if (boardTab !== tab) return;
+      const myId = store.get('uid', '') || await MeowCloud.uid();
+      lb.innerHTML = top.length ? top.map((p, i) => lbRow(i, p, `⏱ ${fmt(p.time)}`, p.id === myId)).join('') : '<div class="lbmsg">Nobody has finished today\'s Daily yet. Be the first! ⚡</div>';
+      if (store.get('dailyDone', 0) === d) {
+        const st = await MeowCloud.dailyStanding(d, store.get('dailyTime', 0));
+        mine.innerHTML = `<div>Daily #${d - DAY0}<small>Your time ⏱ ${fmt(store.get('dailyTime', 0))}</small></div><div style="text-align:right"><b>#${st.rank.toLocaleString()}</b><small>of ${st.total.toLocaleString()} today</small></div>`;
+      } else mine.innerHTML = `<div>Daily #${d - DAY0}<small>Finish today's puzzle to get on the board</small></div><div>📅</div>`;
+    }
+  } catch (e) { lb.innerHTML = '<div class="lbmsg">Couldn\'t load the leaderboard. Check your internet and try again.</div>'; }
+}
+function openBoard(tab) { boardTab = tab || 'all'; show('boardS'); renderBoard(); }
+function editName(after) {
+  modal(`<h2>Your name</h2><p>This is how other players see you on the leaderboard.</p>
+    <input class="nameinput" id="mName" maxlength="16" value="${esc(playerName())}" autocomplete="off">
+    <button class="big" id="mSave">Save</button><button class="big plain" id="mCancel">Cancel</button>`);
+  const inp = $('mName'); setTimeout(() => { try { inp.focus(); inp.select(); } catch (e) {} }, 50);
+  $('mCancel').onclick = () => { closeModal(); after && after(); };
+  $('mSave').onclick = () => {
+    const v = inp.value.replace(/[^\p{L}\p{N} _.-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 16);
+    if (v.length < 2) { toast('Use at least 2 letters'); return; }
+    store.set('pname', v); closeModal(); toast('Name saved 🐾'); syncScore().then(() => after && after());
+  };
+}
+// standing line on the win screen (filled in when the network answers)
+function showStanding(elId, getter, label = '🌍 World rank', save = true) {
+  if (!cloudOK()) return;
+  getter().then(s => { const el = $(elId); if (!s) return; if (save) store.set('lastRank', s.rank); if (el) el.innerHTML = `${label} <b>#${s.rank.toLocaleString()}</b> of ${s.total.toLocaleString()}`; }).catch(() => {});
+}
 // ---------- clear animation when a row / column / colour block is finished ----------
 function groupCells(kind, i) {
   const { N, p } = G, r = (i / N) | 0, c = i % N, out = [];
@@ -634,19 +744,22 @@ function win() {
       store.set('streak', store.get('lastDaily', 0) === d - 1 ? store.get('streak', 0) + 1 : 1);
       store.set('lastDaily', d); store.set('dailyDone', d); store.set('dailyTime', G.time); store.set('dailyStars', stars);
       store.set('lastPlay', Date.now()); syncReminders(); // today's streak warnings are no longer needed
+      syncScore(); syncDaily(d);
     }
     setTimeout(dailyResult, 1200); return;
   }
   const L = G.level, before = unlockedCats();
   store.set('level', L + 1); store.set('lastPlay', Date.now()); syncReminders();
+  const sync = syncScore();
   if (L === 2) setTimeout(askNotifPermission, 2500); // ask after they've enjoyed a couple of levels
   const newCat = unlockedCats() > before ? CATS[unlockedCats() - 1] : null;
   if (L % 5 === 0) store.set('hints', store.get('hints', 3) + 1);
   setTimeout(() => {
     modal(`<h2>${G.sh ? 'Super hard beaten! 💀' : 'Purrfect! 🎉'}</h2><div class="stars">${starHtml}</div><div class="pts">+${pts.toLocaleString()}</div>
     <div class="row3"><div><b>${fmt(G.time)}</b><span>time</span></div><div><b>${G.mistakes}</b><span>mistakes</span></div><div><b>${G.N}</b><span>cats</span></div></div>
-    ${L % 5 === 0 ? '<p>🎁 +1 free hint</p>' : ''}
+    ${L % 5 === 0 ? '<p>🎁 +1 free hint</p>' : ''}<div class="rankline" id="rankLine"></div>
     <button class="big" id="mNext">Next level ▶</button><button class="big plain" id="mHome">Home</button>`);
+    showStanding('rankLine', () => sync.then(r => r ? MeowCloud.myStanding(store.get('score', 0)) : null));
     $('mNext').onclick = () => { closeModal(); afterLevel(L, newCat, () => startGame('level')); };
     $('mHome').onclick = () => { closeModal(); afterLevel(L, newCat, goHome); };
   }, 1200);
@@ -663,8 +776,10 @@ function afterLevel(L, newCat, then) {
 function dailyResult() {
   const d = dayNum(), t = store.get('dailyTime', 0), st = store.get('dailyStars', 3), streak = store.get('streak', 0);
   const text = `🐱 Meowzle Daily #${d - DAY0}\n${'⭐'.repeat(st)}${'☆'.repeat(3 - st)}  ⏱ ${fmt(t)}  🔥${streak}\nCan you beat me?`;
-  modal(`<h2>Daily done! 🎉</h2>${G && G.mode === 'daily' && G.pts ? `<div class="pts">+${G.pts.toLocaleString()}</div>` : ''}<p>Same puzzle for everyone today. New one tomorrow.</p><div class="share">${text}</div>
-  <button class="big blue" id="mCopy">📋 Copy &amp; share</button><button class="big plain" id="mHome">Home</button>`);
+  modal(`<h2>Daily done! 🎉</h2>${G && G.mode === 'daily' && G.pts ? `<div class="pts">+${G.pts.toLocaleString()}</div>` : ''}<p>Same puzzle for everyone today. New one tomorrow.</p><div class="share">${text}</div><div class="rankline" id="rankLine"></div>
+  <button class="big blue" id="mCopy">📋 Copy &amp; share</button><button class="big plain" id="mBoard">🏆 Today's ranking</button><button class="big plain" id="mHome">Home</button>`);
+  showStanding('rankLine', () => syncDaily(d).then(() => MeowCloud.dailyStanding(d, t)), "📅 Today's rank", false);
+  $('mBoard').onclick = () => { closeModal(); openBoard('daily'); };
   $('mCopy').onclick = async () => { try { await navigator.clipboard.writeText(text); toast('Copied! Paste it on WhatsApp 💬'); } catch (e) { toast('Select the text to copy'); } };
   $('mHome').onclick = () => { closeModal(); goHome(); };
 }
@@ -693,6 +808,7 @@ function updateHome() {
   $('streak').textContent = store.get('lastDaily', 0) >= d - 1 ? store.get('streak', 0) : 0;
   $('hLevel').textContent = store.get('level', 1); $('hScore').textContent = store.get('score', 0).toLocaleString();
   $('albumInfo').textContent = `${unlockedCats()} of ${CATS.length} collected`;
+  $('boardInfo').textContent = store.get('lastRank', 0) ? `You're #${store.get('lastRank', 0).toLocaleString()} worldwide` : 'See where you stand worldwide';
   const heroCats = [0, 3, 1, 2, 5, 4];
   $('hero').innerHTML = heroCats.map((k, j) => `<div style="background:${COLORS[[0, 2, 5, 3, 6, 1][j]]}">${j === 0 || j === 4 ? catSVG(CATS[k], false) : j === 2 ? catSVG(CATS[k], true) : XS(false).replace('class="x"', 'class="x" style="width:28%;height:28%;opacity:.4"')}</div>`).join('');
 }
@@ -702,6 +818,7 @@ function openSettings() {
   modal(`<h2>Settings</h2><div class="set">
     ${row('music', 'Music 🎵')}${row('sound', 'Sound effects')}${row('vibe', 'Vibration')}${row('timer', 'Show timer')}
     ${row('autox', 'Auto ✕', 'Mark ✕ around each correct cat for me')}
+    <div class="setrow"><div>Your name<small>${esc(playerName())} · shown on the leaderboard</small></div><button class="smallbtn" id="mRename" style="margin:0">Change</button></div>
     ${row('remind', 'Play reminders 🔔', 'Every 3 hours after you stop · never 9 PM–7 AM')}
     <div class="nextrem" id="nextRem"></div>
   </div><button class="big" id="mOk" style="margin-top:10px">Done</button><button class="linkbtn" id="mReset">Reset progress</button>`);
@@ -719,11 +836,12 @@ function openSettings() {
   };
   showNext();
   document.querySelectorAll('.sw[data-k=remind]').forEach(b => b.addEventListener('click', () => { showNext(); syncReminders(); }));
+  $('mRename').onclick = () => editName(openSettings);
   $('mOk').onclick = closeModal;
   $('mReset').onclick = () => {
-    modal(`<h2>Reset progress?</h2><p>Your level, score, streak and cats will start from zero. This can't be undone.</p>
+    modal(`<h2>Reset progress?</h2><p>Your level, score, streak and cats will start from zero on this phone. Your best score stays on the world leaderboard. This can't be undone.</p>
       <button class="big pinkb" id="mYes">Yes, reset</button><button class="big plain" id="mNo">Cancel</button>`);
-    $('mYes').onclick = () => { ['level', 'score', 'streak', 'lastDaily', 'dailyDone', 'dailyTime', 'dailyStars', 'hints'].forEach(k => { try { localStorage.removeItem('kb_' + k); } catch (e) {} delete mem[k]; }); closeModal(); goHome(); toast('Progress reset'); };
+    $('mYes').onclick = () => { ['level', 'score', 'streak', 'lastDaily', 'dailyDone', 'dailyTime', 'dailyStars', 'hints', 'lastRank'].forEach(k => { try { localStorage.removeItem('kb_' + k); } catch (e) {} delete mem[k]; }); store.set('noRestore', true); closeModal(); goHome(); toast('Progress reset'); };
     $('mNo').onclick = openSettings;
   };
 }
@@ -735,6 +853,10 @@ $('btnRules').onclick = () => { modal(rulesHtml()); $('mOk').onclick = closeModa
 $('btnHint').onclick = useHint;
 $('btnRestart').onclick = () => { if (G && !G.done) startGame(G.mode, true); };
 $('btnBack').onclick = goHome; $('btnBack2').onclick = goHome;
+$('btnBoard').onclick = () => { audio(); openBoard('all'); };
+$('btnBack3').onclick = goHome;
+$('btnRename').onclick = () => editName(renderBoard);
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { boardTab = b.dataset.t; renderBoard(); });
 $('btnAlbum').onclick = () => {
   const ub = unlockedCats();
   $('album').innerHTML = CATS.map((c, k) => `<div class="${k < ub ? '' : 'locked'}">${catSVG(c, k < ub)}<span>${k < ub ? c.name : 'Level ' + k * 5}</span></div>`).join('');
@@ -744,6 +866,8 @@ window.addEventListener('resize', () => { if (G && $('game').classList.contains(
 if (!store.get('lastPlay', 0)) store.set('lastPlay', Date.now());
 syncReminders();
 goHome();
+setTimeout(() => { syncScore().then(r => r && MeowCloud.myStanding(store.get('score', 0)).then(s => { store.set('lastRank', s.rank); updateHome(); })).catch(() => {}); syncDaily(dayNum()); }, 1500);
+window.addEventListener('online', () => { syncScore(); syncDaily(dayNum()); });
 if (!store.get('seenRules', false)) { store.set('seenRules', true); modal(rulesHtml()); $('mOk').onclick = closeModal; }
 window.__G = () => G; window.__music = music;
 })();

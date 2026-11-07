@@ -3,12 +3,15 @@
 const fs = require('fs');
 const path = require('path');
 
+const { buildSync } = require('esbuild');
+const cloud = buildSync({ entryPoints: [path.join(__dirname, 'src', 'cloud.js')], bundle: true, format: 'iife', minify: true, target: 'es2019', write: false, legalComments: 'none' }).outputFiles[0].text;
 const strip = f => fs.readFileSync(path.join(__dirname, 'src', f), 'utf8').replace(/if \(typeof module[^\n]*\n?/, '');
 let html = fs.readFileSync(path.join(__dirname, 'src', 'game.html'), 'utf8');
 
 html = html
   .replace('/*ENGINE*/', () => strip('engine.js'))
   .replace('/*REMINDERS*/', () => strip('reminders.js'))
+  .replace('/*CLOUD*/', () => cloud.replace(/<\/script/gi, '<\\/script'))
   .replace(/<link rel="preconnect"[^\n]*\n/, '')
   .replace(/<link href="https:\/\/fonts\.googleapis\.com[^>]*>/, '<link href="fonts/nunito.css" rel="stylesheet">');
 
