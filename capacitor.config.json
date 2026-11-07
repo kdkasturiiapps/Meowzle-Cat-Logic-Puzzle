@@ -1,0 +1,15 @@
+{
+  "appId": "com.kdkasturiiapps.meowzle",
+  "appName": "Meowzle",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#f7f5f2"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_cat",
+      "iconColor": "#ff8fab",
+      "sound": "meow.wav"
+    }
+  }
+}
