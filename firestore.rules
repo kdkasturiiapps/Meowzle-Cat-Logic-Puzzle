@@ -25,6 +25,21 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Global Challenge rooms: up to 20 players race on the same puzzle.
+    // Anyone signed in can create a room or join one; each player can only change their own entry.
+    match /rooms/{roomId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['status', 'startAt', 'seed', 'size', 'players', 'createdAt'])
+        && request.resource.data.players.keys().hasOnly([request.auth.uid])
+        && request.resource.data.size >= 5 && request.resource.data.size <= 10;
+      allow update: if request.auth != null
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['players'])
+        && request.resource.data.players.diff(resource.data.players).affectedKeys().hasOnly([request.auth.uid])
+        && request.resource.data.players.size() <= 20;
+      allow delete: if false;
+    }
+
     function isOwner(uid) {
       return request.auth != null && request.auth.uid == uid;
     }

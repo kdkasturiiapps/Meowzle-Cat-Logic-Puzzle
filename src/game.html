@@ -102,6 +102,37 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
 .toast.on{transform:translate(-50%,0)}
 .rules{text-align:left;color:var(--ink);font-size:15px;line-height:1.45;margin:0;padding-left:20px;font-weight:600}
 .rules li{margin-bottom:6px}
+.big.chal{background:linear-gradient(100deg,#7c5cff,#d65cf2);position:relative;overflow:hidden}
+.big.chal::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-100%);animation:shine 3.2s ease-in-out infinite}
+@keyframes shine{0%,60%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.lobbyHead{width:100%;text-align:center;margin:18px 0 12px}
+.lobbyCount{font-size:44px;font-weight:800;line-height:1}
+.lobbyCount span{font-size:24px;color:var(--soft)}
+#lbStatus{color:var(--soft);font-weight:700;margin-top:6px;font-size:15px}
+.lbBar{height:6px;background:var(--line);border-radius:999px;overflow:hidden;margin:12px 20px 0}
+.lbBar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7c5cff,#d65cf2);transition:width .3s}
+.lobbyGrid{width:100%;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;overflow:auto;flex:1;min-height:0;align-content:start;padding-bottom:8px}
+.pchip{display:flex;align-items:center;gap:8px;background:#fff;border-radius:14px;padding:7px 10px;box-shadow:var(--shadow);font-weight:700;font-size:14px;min-width:0;animation:pop .3s ease-out}
+.pchip svg{width:28px;height:28px;flex:none}
+.pchip .pn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pchip.me{background:#fff0f4}
+.pchip.empty{background:transparent;box-shadow:none;border:2px dashed var(--line);color:var(--soft);justify-content:center;animation:none}
+.race{width:100%;background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:6px 10px;margin:-4px 0 12px;display:none}
+.race.on{display:block}
+.rrow{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;padding:3px 0}
+.rrow .rk{width:24px;text-align:center;color:var(--soft)}
+.rrow .nm{width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rrow .bar{flex:1;height:7px;background:var(--line);border-radius:999px;overflow:hidden}
+.rrow .bar i{display:block;height:100%;background:#9fd18b;border-radius:999px;transition:width .4s}
+.rrow .st{width:46px;text-align:right;font-size:12px;color:var(--soft)}
+.rrow.me{color:#d63a6a}.rrow.me .bar i{background:var(--accent)}
+.rrow.fin .bar i{background:#ffc94d}
+.rmore{display:flex;justify-content:space-between;font-size:12px;color:var(--soft);font-weight:700;padding-top:3px;border-top:1px solid var(--line);margin-top:3px}
+.rmore button{color:#7c5cff;font-weight:800;font-size:12px}
+.reslist{width:100%;max-height:38vh;overflow:auto;border-radius:14px;background:var(--bg)}
+.reslist .lbrow{padding:8px 12px;font-size:14px}
+.place{font-size:50px;font-weight:800;line-height:1}
+.place small{font-size:20px;color:var(--soft)}
 .tabs{display:flex;background:#ece8e3;border-radius:14px;padding:4px;width:100%;margin-top:18px}
 .tabs button{flex:1;padding:9px 4px;border-radius:11px;font-weight:800;font-size:15px;color:var(--soft)}
 .tabs button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
@@ -180,6 +211,7 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
     <div class="tag">Cat Logic Puzzle · one cat in every colour, row &amp; column</div>
     <button class="big pinkb" id="btnPlay">Play <small id="playInfo">Level 1</small></button>
     <button class="big blue" id="btnDaily">Daily Puzzle <small id="dailyInfo"></small></button>
+    <button class="big chal" id="btnChallenge">⚔️ Global Challenge <small>Race 20 players on the same puzzle</small></button>
     <button class="big plain" id="btnBoard">🏆 Leaderboard <small id="boardInfo">See where you stand worldwide</small></button>
     <button class="big plain" id="btnAlbum">🐾 My Cats <small id="albumInfo"></small></button>
     <button class="big plain" id="btnHow">How to play</button>
@@ -193,6 +225,7 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
       <button class="iconbtn" id="btnSet2" aria-label="Settings">⚙︎</button>
     </div>
     <div class="meta"><div class="lives" id="lives"></div><div class="prog"><i id="gProg"></i></div><span class="chip" id="gTimer">⏱ 0:00</span></div>
+    <div class="race" id="race"></div>
     <div class="shbadge" id="shBadge">💀 SUPER HARD · ×2 POINTS</div>
     <div class="boardWrap" id="boardWrap"><div class="board" id="board"></div><div class="hand" id="hand"><svg viewBox="0 0 64 64"><path d="M24 6c3 0 5 2 5 5v17l3-1c2-.4 4 .6 4.6 2.4l.4-.1c2.2-.6 4.4.6 5 2.6l.3-.1c2.3-.5 4.5 1 4.8 3.3L48 50c-.6 5-5 8-10 8H31c-4 0-7-2-9-5L12 38c-1.4-2 -.8-4.6 1.3-5.8 1.8-1 4-.6 5.3 1l.4.5V11c0-3 2-5 5-5z" fill="#fff" stroke="#33303a" stroke-width="3" stroke-linejoin="round"/><path d="M29 30v9M36.5 31v8M43 34v6" stroke="#33303a" stroke-width="2.5" stroke-linecap="round" opacity=".5"/></svg></div></div>
     <div class="tools">
@@ -202,6 +235,12 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
     </div>
     <div class="tip" id="tip"></div>
     <div class="help" id="help">Tap = ✕ &nbsp;·&nbsp; Double-tap = 🐱<br>Tap a ✕ again to clear it &nbsp;·&nbsp; Drag = ✕ many</div>
+  </section>
+  <section id="lobbyS" class="screen">
+    <div class="top"><button class="iconbtn" id="btnLobbyX" aria-label="Leave">✕</button><div class="ttl">⚔️ Global Challenge</div><div style="width:40px"></div></div>
+    <div class="lobbyHead"><div class="lobbyCount"><b id="lbCount">1</b><span> / 20</span></div><div id="lbStatus">Finding players…</div><div class="lbBar"><i id="lbBar"></i></div></div>
+    <div class="lobbyGrid" id="lobbyGrid"></div>
+    <div class="note" style="margin-top:8px">Same puzzle for everyone · fastest wins · no hints · 3 hearts</div>
   </section>
   <section id="boardS" class="screen">
     <div class="top"><button class="iconbtn" id="btnBack3">←</button><div class="ttl">Leaderboard</div><button class="iconbtn" id="btnRename" aria-label="Change name">✏️</button></div>
@@ -527,6 +566,161 @@ function showStanding(elId, getter, label = '🌍 World rank', save = true) {
   if (!cloudOK()) return;
   getter().then(s => { const el = $(elId); if (!s) return; if (save) store.set('lastRank', s.rank); if (el) el.innerHTML = `${label} <b>#${s.rank.toLocaleString()}</b> of ${s.total.toLocaleString()}`; }).catch(() => {});
 }
+// ---------- Global Challenge: 20 players race on the same puzzle; empty seats are filled with bots ----------
+const BOT_NAMES = {
+  IN: ['Aarav', 'Ananya', 'Rohan', 'Priya', 'Arjun', 'Sneha', 'Vikram', 'Isha', 'Rahul', 'Pooja', 'Kabir', 'Diya', 'Sourav', 'Riya', 'Amit', 'Neha', 'Debjani', 'Arnab'],
+  US: ['Emily', 'Jake', 'Olivia', 'Mason', 'Ava', 'Tyler', 'Hannah', 'Ethan'], BR: ['Lucas', 'Ana', 'Gabriel', 'Julia', 'Mateus', 'Larissa'],
+  ID: ['Putri', 'Budi', 'Rizky', 'Dewi', 'Ayu', 'Fajar'], PH: ['Angel', 'Mark', 'Jasmine', 'Paolo'], MX: ['Sofía', 'Diego', 'Valeria', 'Luis'],
+  GB: ['Oliver', 'Amelia', 'Harry', 'Chloe'], DE: ['Lena', 'Jonas', 'Mia', 'Felix'], FR: ['Léa', 'Hugo', 'Camille', 'Louis'],
+  TR: ['Elif', 'Emre', 'Zeynep', 'Can'], VN: ['Linh', 'Minh', 'Trang', 'Huy'], BD: ['Nusrat', 'Tanvir', 'Sadia', 'Arif'],
+  PK: ['Ayesha', 'Hamza', 'Zara', 'Ali'], NG: ['Chidi', 'Amara', 'Tunde', 'Ngozi'], JP: ['Yuki', 'Haruto', 'Sakura', 'Ren'], CA: ['Noah', 'Emma', 'Liam', 'Chloé']
+};
+const BOT_COUNTRY = [['IN', 30], ['US', 11], ['BR', 9], ['ID', 8], ['PH', 6], ['MX', 5], ['GB', 4], ['DE', 3], ['FR', 3], ['TR', 3], ['VN', 3], ['BD', 4], ['PK', 3], ['NG', 3], ['JP', 2], ['CA', 3]];
+const CH = {
+  SIZE: 7, MAX: 20, LIMIT: 240, LOBBY: 20000,
+  active: false, local: false, roomId: null, uid: 'me', startAt: 0, seed: 0, real: {}, bots: [], botCount: 0, puzzle: null,
+  timers: [], pending: {}, pushT: null, finishedSeen: new Set(), phase: 'idle',
+  makeBots(seed) {
+    const R = CatEngine.rng(seed ^ 0x5bd1e995), pick = a => a[(R() * a.length) | 0];
+    const tot = BOT_COUNTRY.reduce((a, c) => a + c[1], 0);
+    const used = new Set(), bots = [];
+    for (let k = 0; k < this.MAX; k++) {
+      let x = R() * tot, cc = 'IN'; for (const [c, w] of BOT_COUNTRY) { if ((x -= w) < 0) { cc = c; break; } }
+      const first = pick(BOT_NAMES[cc]), f = R(), low = first.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      let name;
+      if (f < .35) name = pick(ADJ) + pick(NOUN) + Math.floor(100 + R() * 900); // same style as real players' default names
+      else if (f < .55) name = first;
+      else if (f < .7) name = low + '_' + Math.floor(R() * 99);
+      else if (f < .8) name = low + '.' + String.fromCharCode(97 + (R() * 26 | 0));
+      else if (f < .9) name = first + ' ' + String.fromCharCode(65 + (R() * 26 | 0)) + '.';
+      else name = pick(['meow_', 'kitty', 'cat']) + low;
+      if (used.has(name)) name += Math.floor(R() * 9); used.add(name);
+      // speed: lognormal around ~95 s for a 7×7, some make mistakes, some run out of hearts
+      const z = Math.sqrt(-2 * Math.log(R() + 1e-9)) * Math.cos(6.283 * R());
+      let T = Math.min(232, Math.max(34, 95 * Math.exp(.5 * z)));
+      const mistakes = [], nm = R() < .12 ? 3 : Math.floor(R() * R() * 3);
+      const outAt = nm === 3 ? 30 + R() * 150 : 0;
+      for (let m = 0; m < nm; m++) mistakes.push((outAt || T) * (.15 + .8 * R()));
+      mistakes.sort((a, b) => a - b); if (outAt) mistakes[2] = outAt;
+      const places = []; for (let i = 0; i < this.SIZE; i++) places.push(T * Math.pow((i + 1) / this.SIZE, 1.25) * (i === this.SIZE - 1 ? 1 : .9 + .2 * R()));
+      places.sort((a, b) => a - b); places[this.SIZE - 1] = T;
+      bots.push({ id: 'bot' + k, bot: true, name, country: cc, breed: (R() * CATS.length) | 0, joinAt: .03 + .9 * R(), T, places, mistakes, outAt });
+    }
+    return bots;
+  },
+  botState(b, t) {
+    const out = b.outAt && t >= b.outAt;
+    const placed = b.places.filter(x => x <= t && (!b.outAt || x < b.outAt)).length;
+    return { placed: Math.min(placed, this.SIZE), mistakes: b.mistakes.filter(x => x <= t).length, done: !b.outAt && t >= b.T ? b.T : 0, out };
+  },
+  everyone() { // [{id,name,country,breed,placed,mistakes,done,out,me}] at this moment
+    const t = (Date.now() - this.startAt) / 1000, list = [];
+    for (const [id, p] of Object.entries(this.real)) list.push({ id, name: p.name, country: p.country, breed: (id.charCodeAt(0) + id.charCodeAt(1 % id.length)) % CATS.length, placed: p.placed || 0, mistakes: p.mistakes || 0, done: p.done || 0, out: !!p.out, me: id === this.uid });
+    const me = list.find(x => x.me);
+    if (me && G && G.mode === 'challenge') { me.placed = G.placed; me.mistakes = G.mistakes; if (G.done && CH.myDone) me.done = CH.myDone; if (CH.myOut) me.out = true; }
+    for (const b of this.bots.slice(0, this.botCount)) list.push({ id: b.id, name: b.name, country: b.country, breed: b.breed, ...this.botState(b, Math.max(0, t)), me: false });
+    return list.sort((a, b) => (a.out - b.out) || ((a.done ? 0 : 1) - (b.done ? 0 : 1)) || (a.done && b.done ? a.done - b.done : 0) || (b.placed - a.placed) || (a.mistakes - b.mistakes));
+  },
+  async start() {
+    if (this.phase !== 'idle') return;
+    this.phase = 'lobby'; this.active = true; this.real = {}; this.bots = []; this.botCount = 0; this.myDone = 0; this.myOut = false; this.finishedSeen = new Set();
+    show('lobbyS'); $('lobbyGrid').innerHTML = ''; $('lbStatus').textContent = 'Finding players…'; $('lbCount').textContent = '1'; $('lbBar').style.width = '0';
+    const me = { name: playerName(), country: country(), placed: 0, mistakes: 0, done: 0, out: false };
+    let joined = null;
+    if (cloudOK()) { try { joined = await Promise.race([MeowCloud.joinChallenge({ name: me.name, country: me.country, size: this.SIZE }), new Promise((_, r) => setTimeout(() => r(new Error('slow')), 9000))]); } catch (e) { joined = null; } }
+    if (this.phase !== 'lobby') return; // left while searching
+    if (joined) { this.local = false; this.roomId = joined.roomId; this.uid = joined.uid; this.startAt = joined.room.startAt; this.seed = joined.room.seed; this.real = joined.room.players || {}; }
+    else { this.local = true; this.roomId = null; this.uid = 'me'; this.startAt = Date.now() + 15000; this.seed = Math.floor(Math.random() * 1e9); this.real = { me }; }
+    this.bots = this.makeBots(this.seed);
+    let sd = this.seed; for (;;) { const p = CatEngine.generate(this.SIZE, sd); if (p) { this.puzzle = p; break; } sd += 100003; }
+    this.timers.push(setInterval(() => this.lobbyTick(), 250));
+    if (!this.local) this.timers.push(setInterval(() => this.pollRoom(), 2500));
+  },
+  async pollRoom() {
+    if (!this.roomId) return;
+    try { const r = await MeowCloud.getRoom(this.roomId); if (r && r.players) { const mine = this.real[this.uid]; this.real = r.players; if (mine && !this.real[this.uid]) this.real[this.uid] = mine; } } catch (e) {}
+  },
+  lobbyTick() {
+    if (this.phase !== 'lobby') return;
+    const left = this.startAt - Date.now(), f = Math.min(1, 1 - left / this.LOBBY);
+    const realN = Object.keys(this.real).length, target = Math.max(0, this.MAX - realN);
+    const shownBots = this.bots.slice(0, target).filter(b => b.joinAt <= f || left <= 600);
+    const n = Math.min(this.MAX, realN + shownBots.length);
+    $('lbCount').textContent = n; $('lbBar').style.width = (100 * n / this.MAX) + '%';
+    $('lbStatus').textContent = left > 0 ? (n < this.MAX ? `Finding players… starting in ${Math.ceil(left / 1000)}s` : `Ready! Starting in ${Math.ceil(left / 1000)}s`) : 'Go!';
+    const chips = [...Object.entries(this.real).map(([id, p]) => ({ id, name: p.name, country: p.country, breed: (id.charCodeAt(0) + id.charCodeAt(1 % id.length)) % CATS.length, me: id === this.uid })), ...shownBots.map(b => ({ ...b, me: false }))];
+    const grid = $('lobbyGrid'), have = new Set([...grid.children].map(c => c.dataset.id));
+    chips.forEach(c => { if (!have.has(c.id)) { const d = document.createElement('div'); d.className = 'pchip' + (c.me ? ' me' : ''); d.dataset.id = c.id; d.innerHTML = `${catSVG(CATS[c.breed], false)}<span class="pn">${esc(c.name)}${c.me ? ' (you)' : ''}</span><span>${flag(c.country)}</span>`; if (c.me) grid.prepend(d); else grid.appendChild(d); if (!c.me) sfx.tap(); } });
+    if (left <= 0) this.begin();
+  },
+  begin() {
+    this.phase = 'race';
+    this.botCount = Math.max(0, this.MAX - Object.keys(this.real).length);
+    this.timers.forEach(clearInterval); this.timers = [];
+    if (!this.local) this.timers.push(setInterval(() => this.pollRoom(), 3000));
+    this.timers.push(setInterval(() => this.raceTick(), 500));
+    startGame('challenge', true); sfx.meow(); toast('Go! 🏁 Fastest cat wins');
+    this.raceTick();
+  },
+  raceTick() {
+    if (this.phase !== 'race' || !G || G.mode !== 'challenge') return;
+    const all = this.everyone(), myRank = all.findIndex(p => p.me) + 1;
+    if (!G.done) $('gLevel').textContent = '#' + myRank;
+    const N = this.SIZE, row = (p, i) => `<div class="rrow${p.me ? ' me' : ''}${p.done ? ' fin' : ''}"><span class="rk">${['🥇', '🥈', '🥉'][i] || i + 1}</span><span>${flag(p.country)}</span><span class="nm">${esc(p.me ? 'You' : p.name)}</span><span class="bar"><i style="width:${100 * p.placed / N}%"></i></span><span class="st">${p.done ? fmt(Math.round(p.done)) : p.out ? '💔' : p.placed + '/' + N}</span></div>`;
+    const top = all.slice(0, 3).map(row);
+    if (myRank > 3) top.push(row(all[myRank - 1], myRank - 1));
+    const fin = all.filter(p => p.done).length;
+    $('race').innerHTML = top.join('') + `<div class="rmore"><span>${fin} of ${all.length} finished</span><button id="raceAll">See all ${all.length} ▸</button></div>`;
+    $('raceAll').onclick = () => this.showAll(false);
+    for (const p of all) if (p.done && !p.me && !this.finishedSeen.has(p.id)) { this.finishedSeen.add(p.id); const pl = this.finishedSeen.size; if (pl <= 3) toast(`${flag(p.country)} ${p.name} finished ${['1st 🥇', '2nd 🥈', '3rd 🥉'][pl - 1]}`); }
+  },
+  listHtml(all) {
+    return all.map((p, i) => `<div class="lbrow${p.me ? ' me' : ''}"><span class="rk${i < 3 && p.done ? ' m' : ''}">${i < 3 && p.done ? ['🥇', '🥈', '🥉'][i] : i + 1}</span><span>${flag(p.country)}</span><span class="nm">${esc(p.name)}${p.me ? ' (you)' : ''}</span><span class="sc">${p.done ? '⏱ ' + fmt(Math.round(p.done)) : p.out ? '💔 out' : p.placed + '/' + this.SIZE + ' 🐱'}</span></div>`).join('');
+  },
+  showAll() {
+    const was = paused;
+    modal(`<h2>Live ranking</h2><div class="reslist" id="liveList">${this.listHtml(this.everyone())}</div><button class="big" id="mOk">Back to puzzle</button>`);
+    const iv = setInterval(() => { const el = $('liveList'); if (!el) return clearInterval(iv); el.innerHTML = this.listHtml(this.everyone()); }, 1000);
+    $('mOk').onclick = () => { clearInterval(iv); closeModal(); paused = was; };
+  },
+  push(patch) { // send my progress to the room (batched, at most every 1.5 s)
+    if (this.local || !this.roomId) return;
+    Object.assign(this.pending, patch);
+    if (this.pushT) return;
+    this.pushT = setTimeout(() => { const p = this.pending; this.pending = {}; this.pushT = null; MeowCloud.updateMe(this.roomId, p).catch(() => {}); }, patch.done || patch.out ? 0 : 1500);
+  },
+  end(why) { // why: done | out | time | left
+    if (this.phase !== 'race') return;
+    const t = Math.round((Date.now() - this.startAt) / 100) / 10;
+    G.done = true;
+    if (why === 'done') { this.myDone = t; this.push({ placed: this.SIZE, done: t }); } else { this.myOut = true; this.push({ out: true }); }
+    this.phase = 'result'; this.timers.forEach(clearInterval); this.timers = [];
+    const all = this.everyone(), rank = all.findIndex(p => p.me) + 1;
+    const pts = why === 'done' ? ([1000, 700, 500][rank - 1] || (rank <= 10 ? 350 - (rank - 4) * 40 : 100)) : 25;
+    store.set('score', store.get('score', 0) + pts); store.set('lastPlay', Date.now());
+    if (why === 'done' && rank === 1) store.set('chWins', store.get('chWins', 0) + 1);
+    $('gScore').textContent = store.get('score', 0).toLocaleString();
+    syncScore(); syncReminders();
+    const head = why === 'done' ? `<div class="place">#${rank}<small> of ${all.length}</small></div><h2>${rank === 1 ? 'You won! 🏆' : rank <= 3 ? 'On the podium! ' + ['🥇', '🥈', '🥉'][rank - 1] : 'Finished! 🎉'}</h2><p>Your time ⏱ ${fmt(Math.round(t))}</p>`
+      : `<div style="font-size:54px">${why === 'time' ? '⏰' : why === 'left' ? '🚪' : '💔'}</div><h2>${why === 'time' ? "Time's up!" : why === 'left' ? 'You left the race' : 'Out of hearts!'}</h2><p>${all.filter(p => p.done).length} cats finished the puzzle.</p>`;
+    const show = () => {
+      modal(`${head}<div class="pts">+${pts.toLocaleString()}</div><div class="reslist" id="resList">${this.listHtml(this.everyone())}</div>
+        <button class="big chal" id="mAgain">⚔️ Play again</button><button class="big plain" id="mHome">Home</button>`);
+      const iv = setInterval(() => { const el = $('resList'); if (!el) return clearInterval(iv); el.innerHTML = this.listHtml(this.everyone()); }, 1000);
+      $('mAgain').onclick = () => { clearInterval(iv); closeModal(); this.reset(); adInter(() => this.start()); };
+      $('mHome').onclick = () => { clearInterval(iv); closeModal(); this.reset(); goHome(); };
+    };
+    if (why === 'left') show(); else setTimeout(show, why === 'done' ? 1100 : 500);
+  },
+  confirmLeave() {
+    const was = paused;
+    modal(`<h2>Leave the race?</h2><p>You'll be out of this challenge.</p><button class="big pinkb" id="mYes">Leave</button><button class="big plain" id="mNo">Keep playing</button>`);
+    $('mYes').onclick = () => { closeModal(); this.end('left'); };
+    $('mNo').onclick = () => { closeModal(); paused = was; };
+  },
+  leaveLobby() { this.reset(); goHome(); },
+  reset() { this.timers.forEach(clearInterval); this.timers = []; this.phase = 'idle'; this.active = false; $('race').classList.remove('on'); }
+};
 // ---------- clear animation when a row / column / colour block is finished ----------
 function groupCells(kind, i) {
   const { N, p } = G, r = (i / N) | 0, c = i % N, out = [];
@@ -643,7 +837,7 @@ function startGame(mode, ready) {
     $('mBack').onclick = () => { closeModal(); goHome(); };
     return;
   }
-  const p = mode === 'daily' ? CatEngine.dailyPuzzle(dayNum()) : CatEngine.levelPuzzle(level);
+  const p = mode === 'challenge' ? CH.puzzle : mode === 'daily' ? CatEngine.dailyPuzzle(dayNum()) : CatEngine.levelPuzzle(level);
   const N = p.N, R = CatEngine.rng(p.seed + 5);
   const ub = unlockedCats();
   const shuffle = [...COLORS].sort(() => R() - .5);
@@ -653,8 +847,11 @@ function startGame(mode, ready) {
   const sh = mode === 'level' && p.superHard; G.sh = sh;
   if (p.given != null && mode === 'level') { G.state[p.given] = 'C'; G.placed = 1; G.given = p.given; }
   $('shBadge').classList.toggle('on', sh); $('boardWrap').classList.toggle('sh', sh);
-  $('gLvlLbl').textContent = mode === 'daily' ? 'Daily' : sh ? 'Level 💀' : 'Level';
-  $('gLevel').textContent = mode === 'daily' ? '#' + (dayNum() - DAY0) : level;
+  $('gLvlLbl').textContent = mode === 'challenge' ? 'Your rank' : mode === 'daily' ? 'Daily' : sh ? 'Level 💀' : 'Level';
+  $('gLevel').textContent = mode === 'challenge' ? '–' : mode === 'daily' ? '#' + (dayNum() - DAY0) : level;
+  $('race').classList.toggle('on', mode === 'challenge');
+  $('btnHint').style.display = $('btnRestart').style.display = mode === 'challenge' ? 'none' : '';
+  if (mode === 'challenge') G.started = true;
   $('gScore').textContent = store.get('score', 0).toLocaleString();
   $('gTimer').style.visibility = SET().timer ? 'visible' : 'hidden';
   buildBoard(); renderAll(); show('game');
@@ -706,6 +903,7 @@ function placeCat(i) {
   G.started = true;
   if (G.sol[i]) {
     G.state[i] = 'C'; G.auto[i] = false; G.placed++; G.lastCat = i; renderCell(i); sparkle(i);
+    if (G.mode === 'challenge' && G.placed < G.N) CH.push({ placed: G.placed });
     if (SET().autox) {
       const N = G.N, r = (i / N) | 0, c = i % N, g = G.p.region[i];
       for (let j = 0; j < N * N; j++) {
@@ -726,6 +924,7 @@ function placeCat(i) {
     el.insertAdjacentHTML('beforeend', BROKEN); el.classList.add('wrong');
     sfx.wrong(); buzz([40, 40, 40]);
     G.mistakes++; G.lives--; renderHud();
+    if (G.mode === 'challenge' && G.lives > 0) CH.push({ mistakes: G.mistakes });
     toast(['No cat here!', 'Hiss! Wrong spot', 'Not this one 🐾'][G.mistakes % 3]);
     setTimeout(() => {
       el.classList.remove('wrong'); G.busy.delete(i);
@@ -735,6 +934,7 @@ function placeCat(i) {
   }
 }
 function outOfLives() {
+  if (G.mode === 'challenge') return CH.end('out');
   modal(`<div style="width:70px;height:70px">${HEART}</div><h2>Out of hearts!</h2><p>The cats are still waiting for their spots.</p>
   <button class="big" id="mRevive">▶ Watch ad · +1 heart</button><button class="big plain" id="mRestart">Start again</button>`);
   $('mRevive').onclick = () => { closeModal(); adReward('heart', () => { G.lives = 1; renderHud(); toast('+1 heart'); }, 'Rewarded ad'); };
@@ -742,6 +942,7 @@ function outOfLives() {
 }
 function useHint() {
   if (G.done) return;
+  if (G.mode === 'challenge') return toast('No hints in challenges ⚔️');
   const h = store.get('hints', 3);
   const go = () => {
     const left = []; for (let i = 0; i < G.N * G.N; i++) if (G.sol[i] && G.state[i] !== 'C') left.push(i);
@@ -780,9 +981,10 @@ window.addEventListener('pointermove', e => {
 });
 window.addEventListener('pointerup', () => { if (G && !G.done && tutor.mode()) tutor.schedule(false); if (!ptr) return; if (ptr.mode === 'clear' && !ptr.moved) { setX(ptr.start, false); sfx.tap(); } ptr = null; });
 window.addEventListener('pointercancel', () => { ptr = null; });
-setInterval(() => { if (!G || G.done || paused || !G.started || document.hidden || !$('game').classList.contains('on')) return; G.time++; $('gTimer').textContent = '⏱ ' + fmt(G.time); }, 1000);
+setInterval(() => { if (G && G.mode === 'challenge' && !G.done) { G.time = Math.max(0, Math.floor((Date.now() - CH.startAt) / 1000)); $('gTimer').textContent = '⏱ ' + fmt(Math.max(0, CH.LIMIT - G.time)); if (G.time >= CH.LIMIT) CH.end('time'); return; } if (!G || G.done || paused || !G.started || document.hidden || !$('game').classList.contains('on')) return; G.time++; $('gTimer').textContent = '⏱ ' + fmt(G.time); }, 1000);
 function win() {
   tutor.clear();
+  if (G.mode === 'challenge') { G.done = true; sfx.win(); buzz([30, 60, 30]); confetti(); return CH.end('done'); }
   G.done = true; sfx.win(); buzz([30, 60, 30]); confetti();
   for (let i = 0; i < G.N * G.N; i++) {
     const el = $('c' + i);
@@ -913,8 +1115,10 @@ $('btnHow').onclick = () => { modal(rulesHtml()); $('mOk').onclick = closeModal;
 $('btnRules').onclick = () => { modal(rulesHtml()); $('mOk').onclick = closeModal; };
 $('btnHint').onclick = useHint;
 $('btnRestart').onclick = () => { if (G && !G.done) startGame(G.mode, true); };
-$('btnBack').onclick = goHome; $('btnBack2').onclick = goHome;
+$('btnBack').onclick = () => { if (G && G.mode === 'challenge' && !G.done) return CH.confirmLeave(); goHome(); }; $('btnBack2').onclick = goHome;
 $('btnBoard').onclick = () => { audio(); openBoard('all'); };
+$('btnChallenge').onclick = () => { audio(); CH.start(); };
+$('btnLobbyX').onclick = () => CH.leaveLobby();
 $('btnBack3').onclick = goHome;
 $('btnRename').onclick = () => editName(renderBoard);
 document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { boardTab = b.dataset.t; renderBoard(); });
