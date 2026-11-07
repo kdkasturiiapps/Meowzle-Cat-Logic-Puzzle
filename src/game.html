@@ -18,20 +18,33 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
 /* home */
 .pills{width:100%;display:flex;justify-content:space-between}
 .pill{background:var(--card);border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px;box-shadow:var(--shadow)}
-.hero{margin-top:26px;display:grid;grid-template-columns:repeat(3,84px);grid-template-rows:repeat(2,84px);gap:6px;padding:6px;background:#fff;border-radius:22px;box-shadow:var(--shadow)}
+.hero{margin-top:18px;display:grid;grid-template-columns:repeat(3,84px);grid-template-rows:repeat(2,84px);gap:6px;padding:6px;background:#fff;border-radius:22px;box-shadow:var(--shadow)}
 .hero div{display:flex;align-items:center;justify-content:center;border-radius:14px}
 .hero svg{width:80%;height:80%}
 .hero .cat{animation:bob 2.6s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-.logo{font-size:40px;font-weight:800;line-height:1;margin-top:26px;letter-spacing:-.5px}
+.logo{font-size:40px;font-weight:800;line-height:1;margin-top:20px;letter-spacing:-.5px}
 .logo span{color:var(--accent)}
-.tag{margin:8px 0 28px;color:var(--soft);font-size:16px;text-align:center;font-weight:600}
+.tag{margin:8px 0 22px;color:var(--soft);font-size:16px;text-align:center;font-weight:600}
 .big{width:100%;padding:14px 16px;border-radius:18px;background:var(--ink);color:#fff;font-weight:800;font-size:19px;display:flex;flex-direction:column;align-items:center;line-height:1.2;transition:transform .1s,opacity .1s;margin-bottom:12px;box-shadow:var(--shadow)}
 .big small{font-size:13px;font-weight:600;opacity:.7}
 .big:active{transform:scale(.98);opacity:.9}
 .big.pinkb{background:var(--accent)}
 .big.blue{background:var(--blue)}
 .big.plain{background:var(--card);color:var(--ink)}
+#home>*{flex-shrink:0}
+.big.playb{font-size:22px;padding:16px}
+.duo,.trio{display:grid;gap:12px;width:100%;margin-bottom:12px}
+.duo{grid-template-columns:1fr 1fr}.trio{grid-template-columns:1fr 1fr 1fr}
+.mode,.mini{border-radius:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;transition:transform .1s;min-width:0}
+.mode:active,.mini:active{transform:scale(.97)}
+.mode{padding:14px 8px;color:#fff;font-weight:800;font-size:18px;position:relative;overflow:hidden}
+.mode b{font-size:26px;margin-bottom:4px}.mode small{font-size:12px;font-weight:600;opacity:.85;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.mode.blue{background:var(--blue)}
+.mode.chal{background:linear-gradient(120deg,#7c5cff,#d65cf2)}
+.mode.chal::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-100%);animation:shine 3.2s ease-in-out infinite}
+.mini{background:var(--card);color:var(--ink);padding:12px 4px;font-weight:800;font-size:14px}
+.mini b{font-size:22px;margin-bottom:4px}.mini small{font-size:11px;color:var(--soft);font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .note{font-size:12px;color:var(--soft);text-align:center;margin-top:auto;font-weight:600}
 /* game */
 .top{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -208,13 +221,17 @@ button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
     <div class="statbar"><div class="stat"><span>Level</span><b id="hLevel">1</b></div><div class="stat grow"><span>Total score</span><b id="hScore">0</b></div><div class="stat"><span>Streak</span><b>🔥 <i id="streak" style="font-style:normal">0</i></b></div><button class="iconbtn" id="btnSet1" aria-label="Settings">⚙︎</button></div>
     <div class="hero" id="hero"></div>
     <div class="logo">Meow<span>zle</span></div>
-    <div class="tag">Cat Logic Puzzle · one cat in every colour, row &amp; column</div>
-    <button class="big pinkb" id="btnPlay">Play <small id="playInfo">Level 1</small></button>
-    <button class="big blue" id="btnDaily">Daily Puzzle <small id="dailyInfo"></small></button>
-    <button class="big chal" id="btnChallenge">⚔️ Global Challenge <small>Race 20 players on the same puzzle</small></button>
-    <button class="big plain" id="btnBoard">🏆 Leaderboard <small id="boardInfo">See where you stand worldwide</small></button>
-    <button class="big plain" id="btnAlbum">🐾 My Cats <small id="albumInfo"></small></button>
-    <button class="big plain" id="btnHow">How to play</button>
+    <div class="tag">One cat in every colour, row &amp; column</div>
+    <button class="big pinkb playb" id="btnPlay">▶ Play <small id="playInfo">Level 1</small></button>
+    <div class="duo">
+      <button class="mode blue" id="btnDaily"><b>📅</b><span>Daily</span><small id="dailyInfo"></small></button>
+      <button class="mode chal" id="btnChallenge"><b>⚔️</b><span>Challenge</span><small>Race 20 players</small></button>
+    </div>
+    <div class="trio">
+      <button class="mini" id="btnBoard"><b>🏆</b><span>Ranking</span><small id="boardInfo"></small></button>
+      <button class="mini" id="btnAlbum"><b>🐾</b><span>My Cats</span><small id="albumInfo"></small></button>
+      <button class="mini" id="btnHow"><b>📖</b><span>How to play</span><small>Rules</small></button>
+    </div>
     <div class="note" id="footNote"></div>
   </section>
   <section id="game" class="screen">
@@ -577,10 +594,22 @@ const BOT_NAMES = {
 };
 const BOT_COUNTRY = [['IN', 30], ['US', 11], ['BR', 9], ['ID', 8], ['PH', 6], ['MX', 5], ['GB', 4], ['DE', 3], ['FR', 3], ['TR', 3], ['VN', 3], ['BD', 4], ['PK', 3], ['NG', 3], ['JP', 2], ['CA', 3]];
 const CH = {
-  SIZE: 7, MAX: 20, LIMIT: 240, LOBBY: 20000,
+  SIZE: 7, MAX: 20, LIMIT: 300, LOBBY: 20000,
+  // How fast this player solves a 7×7 (seconds), from their own recent puzzles. Bots race at a similar,
+  // human pace so a real player can win with a good game (default 150 s for new players).
+  logPace(t, n) {
+    const v = t * Math.pow(49 / (n * n), 1.4), a = store.get('pace', []);
+    a.push(Math.round(Math.min(600, Math.max(20, v)))); store.set('pace', a.slice(-8));
+  },
+  myPace() {
+    const a = [...store.get('pace', [])].sort((x, y) => x - y);
+    if (a.length < 2) return 150;
+    const m = a[a.length >> 1];
+    return Math.min(240, Math.max(75, (m * Math.min(a.length, 5) + 150 * Math.max(0, 5 - a.length)) / 5));
+  },
   active: false, local: false, roomId: null, uid: 'me', startAt: 0, seed: 0, real: {}, bots: [], botCount: 0, puzzle: null,
   timers: [], pending: {}, pushT: null, finishedSeen: new Set(), phase: 'idle',
-  makeBots(seed) {
+  makeBots(seed, S = 150) {
     const R = CatEngine.rng(seed ^ 0x5bd1e995), pick = a => a[(R() * a.length) | 0];
     const tot = BOT_COUNTRY.reduce((a, c) => a + c[1], 0);
     const used = new Set(), bots = [];
@@ -595,14 +624,17 @@ const CH = {
       else if (f < .9) name = first + ' ' + String.fromCharCode(65 + (R() * 26 | 0)) + '.';
       else name = pick(['meow_', 'kitty', 'cat']) + low;
       if (used.has(name)) name += Math.floor(R() * 9); used.add(name);
-      // speed: lognormal around ~95 s for a 7×7, some make mistakes, some run out of hearts
+      // speed: humans are slower than the player's typical time on average; only a few are faster.
+      // median 1.3×S, spread ±30%; nobody faster than 0.72×S or 65 s; some don't finish in time.
       const z = Math.sqrt(-2 * Math.log(R() + 1e-9)) * Math.cos(6.283 * R());
-      let T = Math.min(232, Math.max(34, 95 * Math.exp(.5 * z)));
+      let T = Math.max(65, 0.72 * S, 1.3 * S * Math.exp(.3 * z));
+      T = Math.min(this.LIMIT + 60, T);
       const mistakes = [], nm = R() < .12 ? 3 : Math.floor(R() * R() * 3);
-      const outAt = nm === 3 ? 30 + R() * 150 : 0;
+      const outAt = nm === 3 ? 40 + R() * 200 : 0;
       for (let m = 0; m < nm; m++) mistakes.push((outAt || T) * (.15 + .8 * R()));
       mistakes.sort((a, b) => a - b); if (outAt) mistakes[2] = outAt;
-      const places = []; for (let i = 0; i < this.SIZE; i++) places.push(T * Math.pow((i + 1) / this.SIZE, 1.25) * (i === this.SIZE - 1 ? 1 : .9 + .2 * R()));
+      T += nm * 8; // a wrong cat costs a human a few seconds
+      const places = []; for (let i = 0; i < this.SIZE; i++) places.push(T * (.08 + .92 * Math.pow((i + 1) / this.SIZE, 1.35)) * (i === this.SIZE - 1 ? 1 : .88 + .24 * R()));
       places.sort((a, b) => a - b); places[this.SIZE - 1] = T;
       bots.push({ id: 'bot' + k, bot: true, name, country: cc, breed: (R() * CATS.length) | 0, joinAt: .03 + .9 * R(), T, places, mistakes, outAt });
     }
@@ -611,7 +643,7 @@ const CH = {
   botState(b, t) {
     const out = b.outAt && t >= b.outAt;
     const placed = b.places.filter(x => x <= t && (!b.outAt || x < b.outAt)).length;
-    return { placed: Math.min(placed, this.SIZE), mistakes: b.mistakes.filter(x => x <= t).length, done: !b.outAt && t >= b.T ? b.T : 0, out };
+    return { placed: Math.min(placed, b.T > this.LIMIT ? this.SIZE - 1 : this.SIZE), mistakes: b.mistakes.filter(x => x <= t).length, done: !b.outAt && b.T <= this.LIMIT && t >= b.T ? b.T : 0, out };
   },
   everyone() { // [{id,name,country,breed,placed,mistakes,done,out,me}] at this moment
     const t = (Date.now() - this.startAt) / 1000, list = [];
@@ -625,9 +657,9 @@ const CH = {
     if (this.phase !== 'idle') return;
     this.phase = 'lobby'; this.active = true; this.real = {}; this.bots = []; this.botCount = 0; this.myDone = 0; this.myOut = false; this.finishedSeen = new Set();
     show('lobbyS'); $('lobbyGrid').innerHTML = ''; $('lbStatus').textContent = 'Finding players…'; $('lbCount').textContent = '1'; $('lbBar').style.width = '0';
-    const me = { name: playerName(), country: country(), placed: 0, mistakes: 0, done: 0, out: false };
+    const me = { name: playerName(), country: country(), placed: 0, mistakes: 0, done: 0, out: false, pace: Math.round(this.myPace()) };
     let joined = null;
-    if (cloudOK()) { try { joined = await Promise.race([MeowCloud.joinChallenge({ name: me.name, country: me.country, size: this.SIZE }), new Promise((_, r) => setTimeout(() => r(new Error('slow')), 9000))]); } catch (e) { joined = null; } }
+    if (cloudOK()) { try { joined = await Promise.race([MeowCloud.joinChallenge({ name: me.name, country: me.country, size: this.SIZE, pace: me.pace }), new Promise((_, r) => setTimeout(() => r(new Error('slow')), 9000))]); } catch (e) { joined = null; } }
     if (this.phase !== 'lobby') return; // left while searching
     if (joined) { this.local = false; this.roomId = joined.roomId; this.uid = joined.uid; this.startAt = joined.room.startAt; this.seed = joined.room.seed; this.real = joined.room.players || {}; }
     else { this.local = true; this.roomId = null; this.uid = 'me'; this.startAt = Date.now() + 15000; this.seed = Math.floor(Math.random() * 1e9); this.real = { me }; }
@@ -656,6 +688,9 @@ const CH = {
   begin() {
     this.phase = 'race';
     this.botCount = Math.max(0, this.MAX - Object.keys(this.real).length);
+    // everyone in the room gets the same bots: pace = middle pace of the real players (sorted by id)
+    const paces = Object.keys(this.real).sort().map(k => +this.real[k].pace || 150).sort((a, b) => a - b);
+    this.bots = this.makeBots(this.seed, paces[paces.length >> 1] || 150);
     this.timers.forEach(clearInterval); this.timers = [];
     if (!this.local) this.timers.push(setInterval(() => this.pollRoom(), 3000));
     this.timers.push(setInterval(() => this.raceTick(), 500));
@@ -986,6 +1021,7 @@ function win() {
   tutor.clear();
   if (G.mode === 'challenge') { G.done = true; sfx.win(); buzz([30, 60, 30]); confetti(); return CH.end('done'); }
   G.done = true; sfx.win(); buzz([30, 60, 30]); confetti();
+  if (G.hints === 0 && !(G.p && G.p.superHard) && G.time >= 5) CH.logPace(G.time, G.N);
   for (let i = 0; i < G.N * G.N; i++) {
     const el = $('c' + i);
     if (G.state[i] === 'X') el.innerHTML = '';
@@ -1067,11 +1103,11 @@ function goHome() { tutor.clear(); updateHome(); show('home'); }
 function updateHome() {
   $('playInfo').textContent = `Level ${store.get('level', 1)}` + (CatEngine.isSuperHard(store.get('level', 1)) ? ' · 💀 Super hard' : '');
   const d = dayNum(), done = store.get('dailyDone', 0) === d;
-  $('dailyInfo').textContent = done ? `#${d - DAY0} · done ✓ · share your result` : `#${d - DAY0} · same puzzle for everyone`;
+  $('dailyInfo').textContent = done ? `#${d - DAY0} · done ✓` : `#${d - DAY0} · new today`;
   $('streak').textContent = store.get('lastDaily', 0) >= d - 1 ? store.get('streak', 0) : 0;
   $('hLevel').textContent = store.get('level', 1); $('hScore').textContent = store.get('score', 0).toLocaleString();
-  $('albumInfo').textContent = `${unlockedCats()} of ${CATS.length} collected`;
-  $('boardInfo').textContent = store.get('lastRank', 0) ? `You're #${store.get('lastRank', 0).toLocaleString()} worldwide` : 'See where you stand worldwide';
+  $('albumInfo').textContent = `${unlockedCats()} of ${CATS.length}`;
+  $('boardInfo').textContent = store.get('lastRank', 0) ? `#${store.get('lastRank', 0).toLocaleString()} worldwide` : 'Worldwide';
   const heroCats = [0, 3, 1, 2, 5, 4];
   $('hero').innerHTML = heroCats.map((k, j) => `<div style="background:${COLORS[[0, 2, 5, 3, 6, 1][j]]}">${j === 0 || j === 4 ? catSVG(CATS[k], false) : j === 2 ? catSVG(CATS[k], true) : XS(false).replace('class="x"', 'class="x" style="width:28%;height:28%;opacity:.4"')}</div>`).join('');
 }

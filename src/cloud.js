@@ -88,9 +88,9 @@ async function dailyStanding(day, time) {
 // ---------- Global Challenge rooms ----------
 // rooms/{id}: { status, startAt (ms), seed, size, createdAt, players: { uid: {name, country, joinedAt, placed, mistakes, done, out} } }
 const ROOM_MAX = 20, LOBBY_MS = 20000;
-async function joinChallenge({ name, country, size }) {
+async function joinChallenge({ name, country, size, pace }) {
   const id = await uid();
-  const me = { name, country: country || '', joinedAt: Date.now(), placed: 0, mistakes: 0, done: 0, out: false };
+  const me = { name, country: country || '', pace: pace || 150, joinedAt: Date.now(), placed: 0, mistakes: 0, done: 0, out: false };
   // 1) an open room that starts in more than 4 s
   const q = query(collection(db, 'rooms'), where('startAt', '>', Date.now() + 4000), orderBy('startAt'), limit(5));
   const res = await withTimeout(getDocs(q));
